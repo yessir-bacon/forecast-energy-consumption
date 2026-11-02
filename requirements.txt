@@ -1,0 +1,17 @@
+# Data Manipulation & Time-Series Utilities
+pandas>=2.2.0
+numpy>=1.26.0
+
+# Data Visualization & Exploratory Analysis
+matplotlib>=3.8.0
+seaborn>=0.13.0
+jupyter>=1.0.0
+
+# Machine Learning & Statistical Forecasting Models
+scikit-learn>=1.4.0
+xgboost>=2.0.0
+statsmodels>=0.14.1
+
+# Model Serialization & Environment
+joblib>=1.3.0
+python-dotenv>=1.0.0
