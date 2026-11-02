@@ -1,0 +1,4 @@
+# Ignore all data and saved models
+data/
+models/
+.venv/
