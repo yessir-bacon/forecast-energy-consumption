@@ -67,12 +67,61 @@ def load_and_clean_data():
     # Drop the first 7 rows with NaN values due to lagging
     merged_df = merged_df.dropna()
 
-    # Save the cleaned data to a new CSV file
-    output_dir = project_root / "data" / "processed"
-    output_dir.mkdir(parents=True, exist_ok=True)
-    output_path = output_dir / "daily_energy_and_weather_data.csv"
-    merged_df.to_csv(output_path)
-    print(f"✨ Success! Base daily dataset exported to: {output_path}\n")
+    # Reset the index and rename the column
+    merged_df = merged_df.reset_index().rename(columns={'index': 'timestamp'})
+    
+    return merged_df
+
+def create_time_features(df):
+    # Set 'timestamp' column as datetime
+    df['timestamp'] = pd.to_datetime(df['timestamp'], utc=True)
+
+    # Specify the frequency as daily and sort the index
+    df = df.set_index('timestamp').asfreq('D').sort_index()
+
+    # Extract standard calendar components
+    df['year'] = df.index.year
+    df['quarter'] = df.index.quarter
+    df['month'] = df.index.month
+    df['day'] = df.index.day
+
+    # Label encode the year
+    unique_years = sorted(df['year'].unique())
+    year_mapping = {year: i for i, year in enumerate(unique_years)}
+    df['year_encoded'] = df['year'].map(year_mapping)
+    df = df.drop(columns=['year'])  # Drop the original year column after encoding
+
+    # Day of the week features
+    df['day_of_week_num'] = df.index.dayofweek  # 0 = Monday, 6 = Sunday
+    df['is_weekend'] = df.index.dayofweek.isin([5, 6]).astype(int)
+
+    # Week-based features
+    df['week_of_year'] = df.index.isocalendar().week.astype(int)
+
+    # Week of the month (1 to 5)
+    df['week_of_month'] = (df.index.day - 1) // 7 + 1
+
+    # Business cycle markers
+    df['is_month_start'] = df.index.is_month_start.astype(int)
+    df['is_month_end'] = df.index.is_month_end.astype(int)
+    df['is_quarter_end'] = df.index.is_quarter_end.astype(int)
+
+    # Reset the index and rename the column
+    df = df.reset_index()
+
+    return df
+
+def data_prep_pipeline():
+    # Load and clean the data
+    df = load_and_clean_data()
+
+    # Create time-based features
+    df_with_time = create_time_features(df)
+
+    # Save the processed dataset to a CSV file
+    processed_file_path = Path(__file__).resolve().parent.parent / "data" / "processed" / "daily_energy_and_weather_data.csv"
+    df_with_time.to_csv(processed_file_path, index=False)
+    print(f"Processed dataset saved to {processed_file_path}")
 
 if __name__ == "__main__":
-    load_and_clean_data()
+    data_prep_pipeline()
