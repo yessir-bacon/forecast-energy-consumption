@@ -139,7 +139,7 @@ def data_prep_pipeline():
         'rain_3h',
         'is_month_start'
     ]
-    df_final = df_with_time[useful_features + ['total load actual']]
+    df_final = df_with_time[['timestamp'] + useful_features + ['total load actual']]
 
     # Save the processed dataset to a CSV file
     processed_file_path = Path(__file__).resolve().parent.parent / "data" / "processed" / "daily_energy_and_weather_data.csv"
