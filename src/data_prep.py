@@ -118,9 +118,32 @@ def data_prep_pipeline():
     # Create time-based features
     df_with_time = create_time_features(df)
 
+    # Only keep useful features
+    useful_features = [
+        'day_of_week_num',
+        'day',
+        'total load actual_lag_1d',
+        'total load actual_lag_2d',
+        'week_of_year',
+        'total load actual_lag_7d',
+        'wind_deg',
+        'temp_min',
+        'temp_max',
+        'temp_lag_1d',
+        'month',
+        'quarter',
+        'wind_speed',
+        'clouds_all',
+        'pressure',
+        'temp',
+        'rain_3h',
+        'is_month_start'
+    ]
+    df_final = df_with_time[useful_features + ['total load actual']]
+
     # Save the processed dataset to a CSV file
     processed_file_path = Path(__file__).resolve().parent.parent / "data" / "processed" / "daily_energy_and_weather_data.csv"
-    df_with_time.to_csv(processed_file_path, index=False)
+    df_final.to_csv(processed_file_path, index=False)
     print(f"Processed dataset saved to {processed_file_path}")
 
 if __name__ == "__main__":
