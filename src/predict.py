@@ -1,6 +1,15 @@
+import sys
+from pathlib import Path
+
+ROOT_DIR = Path(__file__).resolve().parents[1]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+# 2. Now your local module imports will resolve flawlessly anywhere on any machine
+import argparse
+import logging
 import joblib
 import pandas as pd
-from pathlib import Path
 
 from src.data_prep import data_prep_pipeline
 
